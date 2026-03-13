@@ -1,14 +1,15 @@
 .App-header {
   display: flex;
   align-items: center;
+  border-bottom: 1px solid #e1003c;
 }
 
 .App-body {
-  border-top: 2px solid #e1003c;
-  border-bottom: 2px solid #e1003c;
-  height: 450px;
+  padding-bottom:300px;
 }
 
 .App-footer {
+  border-top: 1px solid #e1003c;
   text-align: center;
+  font-style: italic;
 }
