@@ -1,0 +1,5 @@
+.notifications {
+  border: 1px dashed red;
+  padding: 10px;
+  position: relative;
+}
