@@ -1,0 +1,33 @@
+.notifications {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 12px 20px 0;
+  box-sizing: border-box;
+}
+
+.notification-title {
+  margin-bottom: 12px;
+}
+
+.notification-items {
+  border: 1px dashed red;
+  padding: 10px;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.notification-items p,
+.notification-items ul {
+  margin: 0;
+}
+
+.notification-items p {
+  margin-bottom: 12px;
+}
+
+.notification-items ul {
+  padding-left: 18px;
+}
