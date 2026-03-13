@@ -1,0 +1,14 @@
+.App-header {
+  display: flex;
+  align-items: center;
+}
+
+.App-body {
+  border-top: 2px solid #e1003c;
+  border-bottom: 2px solid #e1003c;
+  height: 450px;
+}
+
+.App-footer {
+  text-align: center;
+}
