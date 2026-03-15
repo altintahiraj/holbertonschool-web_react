@@ -1,12 +1,5 @@
 .App-header {
-  overflow: hidden;
-}
-
-.App-header > img,
-.App-header > h1 {
-  float: left;
-}
-
-.App-header > h1 {
-  color: #e1003c;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e1003c;
 }

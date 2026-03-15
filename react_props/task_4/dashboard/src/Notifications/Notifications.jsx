@@ -1,41 +1,25 @@
-import "./Notifications.css";
+/* eslint-disable */
+import React from 'react';
 import closeIcon from "../assets/close-button.png";
-import NotificationItem from "./NotificationItem.js";
+import NotificationItem from './NotificationItem';
+import './Notifications.css';
 
-function Notifications({ notifications = [] }) {
-  const handleClick = () => {
-    console.log("Close button has been clicked");
-  };
-
-  return (
-    <div className="notifications">
-      <button
-        type="button"
-        style={{ position: "absolute", top: "15px", right: "20px" }}
-        aria-label="Close"
-        onClick={handleClick}
-      >
-        <img
-          src={closeIcon}
-          alt="close"
-          style={{ width: "10px", height: "10px" }}
-        />
-      </button>
-
-      <p>Here is the list of notifications</p>
-
-      <ul>
-        {notifications.map((notification) => (
-          <NotificationItem
-            key={notification.id}
-            type={notification.type}
-            value={notification.value}
-            html={notification.html}
-          />
-        ))}
-      </ul>
-    </div>
-  );
+export default function Notifications({ notifications = [] }) {
+    return (
+        <div className="notifications">
+            <div>
+                <p>Here is the list of notifications</p>
+                <ul>
+                    {(notifications).map(notification => {
+                        return (
+                            <NotificationItem key={notification.id} type={notification.type} html={notification.html} value={notification.value} />
+                        )
+                    })}
+                </ul>
+            </div>
+            <button aria-label="Close" onClick={() => { console.log("Close button has been clicked") }} style={{ marginLeft: "auto", backgroundColor: "white", border: "none", height: "25px" }}>
+                <img alt="Close Button" src={closeIcon}></img>
+            </button>
+        </div>
+    )
 }
-
-export default Notifications;

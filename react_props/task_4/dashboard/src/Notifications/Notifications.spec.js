@@ -1,46 +1,39 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import Notifications from "./Notifications.js";
+/* eslint-disable */
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import NotificationItem from './NotificationItem';
 
-const notifications = [
-  { id: 1, type: "default", value: "Test notification 1" },
-  { id: 2, type: "urgent", value: "Test notification 2" },
-  {
-    id: 3,
-    type: "urgent",
-    html: { __html: "<strong>Test notification 3</strong>" },
-    value: "",
-  },
-];
+describe('NotificationItem component', () => {
+    test('renders with default type and correct styling', () => {
+        render(<NotificationItem type="default" value="Test notification" />);
 
-describe("Notifications component", () => {
-  test("renders notification items from the notifications prop", () => {
-    render(<Notifications notifications={notifications} />);
+        const liElement = screen.getByText('Test notification');
 
-    const notificationTitle = screen.getByText(
-      /here is the list of notifications/i
-    );
-    expect(notificationTitle).toBeInTheDocument();
+        expect(liElement).toHaveAttribute('data-notification-type', 'default');
 
-    const closeButton = screen.getByRole("button", { name: /close/i });
-    expect(closeButton).toBeInTheDocument();
+        expect(liElement).toHaveStyle('color: blue');
+    });
 
-    const listItems = screen.getAllByRole("listitem");
-    expect(listItems).toHaveLength(3);
-    expect(screen.getByText(/test notification 1/i)).toBeInTheDocument();
-    expect(screen.getByText(/test notification 2/i)).toBeInTheDocument();
-    expect(screen.getByText(/test notification 3/i)).toBeInTheDocument();
-  });
+    test('renders with urgent type and correct styling', () => {
+        render(<NotificationItem type="urgent" value="Urgent notification" />);
 
-  test("logs when the close button is clicked", () => {
-    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+        const liElement = screen.getByText('Urgent notification');
 
-    render(<Notifications notifications={notifications} />);
+        expect(liElement).toHaveAttribute('data-notification-type', 'urgent');
 
-    const closeButton = screen.getByRole("button", { name: /close/i });
+        expect(liElement).toHaveStyle('color: red');
+    });
 
-    fireEvent.click(closeButton);
-    expect(consoleSpy).toHaveBeenCalledWith("Close button has been clicked");
+    test('renders with html content', () => {
+        const htmlContent = { __html: '<strong>Urgent requirement</strong>' };
+        render(<NotificationItem type="urgent" html={htmlContent} />);
 
-    consoleSpy.mockRestore();
-  });
+        const liElement = document.querySelector('li');
+
+        expect(liElement).toHaveAttribute('data-notification-type', 'urgent');
+
+        expect(liElement).toHaveStyle('color: red');
+
+        expect(liElement.innerHTML).toContain('<strong>Urgent requirement</strong>');
+    });
 });

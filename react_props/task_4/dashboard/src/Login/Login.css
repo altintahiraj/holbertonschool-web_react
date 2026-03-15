@@ -1,14 +1,20 @@
 .App-body {
-  height: 450px;
-  border-top: 2px solid #e1003c;
-  border-bottom: 2px solid #e1003c;
-  padding: 32px 20px;
-  box-sizing: border-box;
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
-.App-body-form {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+.App-body form {
+    display: flex;
+    flex-direction: column;
+}
+
+.App-body input {
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.App-body button {
+    width: 60px;
+    padding: 5px;
 }

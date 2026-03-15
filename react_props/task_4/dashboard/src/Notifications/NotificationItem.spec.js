@@ -1,20 +1,32 @@
+import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
-import NotificationItem from "./NotificationItem.js";
+import NotificationItem from "./NotificationItem";
 
-describe("NotificationItem component", () => {
-  test("renders a default notification in blue", () => {
-    render(<NotificationItem type="default" value="New course available" />);
+describe("NotificationItem Component", () => {
+   
+    it("Color is blue when type is default", () => {
+        const type = "default";
+        const value = "New course available";
 
-    const listItem = screen.getByRole("listitem");
-    expect(listItem).toHaveAttribute("data-notification-type", "default");
-    expect(listItem).toHaveStyle({ color: "rgb(0, 0, 255)" });
-  });
+        render(<NotificationItem type={type} value={value} />);
 
-  test("renders an urgent notification in red", () => {
-    render(<NotificationItem type="urgent" value="New resume available" />);
+        const listElement = screen.getByRole("listitem");
 
-    const listItem = screen.getByRole("listitem");
-    expect(listItem).toHaveAttribute("data-notification-type", "urgent");
-    expect(listItem).toHaveStyle({ color: "rgb(255, 0, 0)" });
-  });
+        expect(listElement).toHaveStyle({ color: "blue" });
+
+        expect(listElement).toHaveAttribute("data-notification-type", "default");
+    });
+
+    it("Color is red when type is urgent", () => {
+        const type = "urgent";
+        const value = "New resume available";
+
+        render(<NotificationItem type={type} value={value} />);
+
+        const listElement = screen.getByRole("listitem");
+
+        expect(listElement).toHaveStyle({ color: "red" });
+
+        expect(listElement).toHaveAttribute("data-notification-type", "urgent");
+    });
 });

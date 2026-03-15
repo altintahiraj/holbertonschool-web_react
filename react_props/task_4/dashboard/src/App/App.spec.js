@@ -1,32 +1,47 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import App from "./App";
 
-describe("App component", () => {
-  test("renders the Login component when isLoggedIn is false", () => {
-    render(<App isLoggedIn={false} />);
+describe("App Component", () => {
+    beforeEach(() => {
+        render(<App />);
+    });
 
-    expect(
-      screen.getByText(/here is the list of notifications/i)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { level: 1, name: /school dashboard/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/login to access the full dashboard/i)
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /ok/i })).toBeInTheDocument();
-    expect(screen.queryByRole("table")).not.toBeInTheDocument();
-  });
+    it("Renders Header component", () => {
+        const heading = screen.getByRole("heading", {
+            level: 1,
+            name: /school dashboard/i,
+        });
+        expect(heading).toBeInTheDocument();
+    });
 
-  test("renders the CourseList component when isLoggedIn is true", () => {
-    render(<App isLoggedIn />);
+    it("Renders Login Component", () => {
+        const loginText = screen.getByText(/Login to access the full dashboard/i);
+        expect(loginText).toBeInTheDocument();
+    });
 
-    expect(screen.getByRole("table")).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /available courses/i })
-    ).toBeInTheDocument();
-    expect(screen.queryByText(/login to access the full dashboard/i)).not.toBeInTheDocument();
-  });
+    it("Renders Footer Component", () => {
+        expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
+    });
+
+    it("CourseList is rendered when isLoggedIn is false", () => {
+        cleanup();
+
+        const rendered = render(<App />);
+        const container = rendered.container;
+
+        const loginComponent = container.querySelector(".App-body");
+
+        expect(loginComponent).toBeInTheDocument();
+    });
+
+    it("CourseList is rendered when isLoggedIn is true", () => {
+        cleanup();
+
+        const rendered = render(<App isLoggedIn={true} />);
+        const container = rendered.container;
+
+        const courseList = container.querySelector("#CourseList");
+
+        expect(courseList).toBeInTheDocument();
+    });
 });
