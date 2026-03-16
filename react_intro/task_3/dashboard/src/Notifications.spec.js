@@ -1,58 +1,63 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import Notifications from "./Notifications";
+import { fireEvent, render, screen } from "@testing-library/react";
+import Notifications from "./Notifications.jsx";
 
-describe("Notification Component", () => {
-    beforeEach(() => {
-        render(<Notifications />);
-    });
+describe("Notifications component", () => {
+  test("renders all required notifications elements ignoring case", () => {
+    render(<Notifications />);
 
-    test("Has title", () => {
-        // Get tile
-        const titleElement = screen.getByText(/Here is the list of notifications/i);
+    const notificationTitle = screen.getByText(
+      /here is the list of notifications/i
+    );
+    const closeButton = screen.getByRole("button", { name: /close/i });
+    const closeIcon = screen.getByRole("img", { name: /close icon/i });
+    const notificationList = screen.getByRole("list");
+    const listItems = screen.getAllByRole("listitem");
 
-        //assert existance of title
-        expect(titleElement).toBeInTheDocument();
-    });
+    expect(notificationTitle).toBeInTheDocument();
+    expect(closeButton).toBeInTheDocument();
+    expect(closeIcon).toBeInTheDocument();
+    expect(notificationList).toBeInTheDocument();
+    expect(listItems).toHaveLength(3);
+    expect(screen.getByText(/new course available/i)).toBeInTheDocument();
+    expect(screen.getByText(/new resume available/i)).toBeInTheDocument();
+    expect(screen.getByText(/urgent requirement/i)).toBeInTheDocument();
+    expect(screen.getByText(/complete by eod/i)).toBeInTheDocument();
+    expect(listItems[0]).toHaveAttribute("data-priority", "default");
+    expect(listItems[1]).toHaveAttribute("data-priority", "urgent");
+    expect(listItems[2]).toHaveAttribute("data-priority", "urgent");
+  });
 
-    test("Contains button", () => {
-        // Get tile
-        const buttonElement = screen.getByRole("button");
+  test("renders the notifications title", () => {
+    render(<Notifications />);
 
-        //assert existance of button
-        expect(buttonElement).toBeInTheDocument();
-    });
+    const notificationTitle = screen.getByText(
+      /here is the list of notifications/i
+    );
+    expect(notificationTitle).toBeInTheDocument();
+  });
 
-    test("Contains 3 li elements", () => {
-        // Get tile
-        const listElements = screen.getAllByRole("listitem");
+  test("renders the close button", () => {
+    render(<Notifications />);
 
-        //assert number of li elements
-        expect(listElements.length).toBe(3);
+    const closeButton = screen.getByRole("button", { name: /close/i });
+    expect(closeButton).toBeInTheDocument();
+  });
 
-        //assert values of li elements
-        expect(listElements[0].textContent).toMatch(/New course available/i);
-        expect(listElements[1].textContent).toMatch(/New resume available/i);
-        expect(listElements[2].textContent).toMatch(
-            /Urgent requirement - complete by EOD/i
-        );
-    });
+  test("renders 3 list items", () => {
+    render(<Notifications />);
 
-    test("Close button logs message", () => {
-        cleanup();
+    const listItems = screen.getAllByRole("listitem");
+    expect(listItems).toHaveLength(3);
+  });
 
-        // Spy on console.log
-        const logSpy = jest.spyOn(console, "log").mockImplementation(() => { });
+  test("logs when the close button is clicked", () => {
+    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
 
-        // Render component
-        render(<Notifications />);
+    render(<Notifications />);
+    fireEvent.click(screen.getByRole("button", { name: /close/i }));
 
-        // Simulate click
-        fireEvent.click(screen.getByRole("button", { name: /Close/i }));
+    expect(consoleSpy).toHaveBeenCalledWith("Close button has been clicked");
 
-        //assert message logged when button is clicked
-        expect(logSpy).toHaveBeenCalledWith("Close button has been clicked");
-
-        // Clean up
-        logSpy.mockRestore();
-    });
+    consoleSpy.mockRestore();
+  });
 });
