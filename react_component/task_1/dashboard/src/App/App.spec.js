@@ -1,97 +1,46 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import App from "./App";
+import { cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import App from './App';
 
-describe("App Component", () => {
-    let alertSpy;
+describe('App Component', () => {
+  afterEach(() => {
+    cleanup();
+  });
 
-    beforeAll(() => {
-        alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
-    });
+  it('renders the Header component', () => {
+    render(<App />);
+    const heading = screen.getByRole('heading', { level: 1, name: /school dashboard/i });
+    expect(heading).toBeInTheDocument();
+  });
 
-    afterAll(() => {
-        alertSpy.mockRestore();
-    });
+  it('renders the Login component', () => {
+    render(<App />);
+    expect(screen.getByText(/Login to access the full dashboard/i)).toBeInTheDocument();
+  });
 
-    beforeEach(() => {
-        // Render app component
-        render(<App />);
-    });
+  it('renders the Footer component', () => {
+    render(<App />);
+    expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
+  });
 
-    // Test if app component renders Header component
-    it.skip("Renders Header component", () => {
-        const heading = screen.getByRole("heading", {
-            level: 1,
-            name: /school dashboard/i,
-        });
-        expect(heading).toBeInTheDocument();
-    });
+  it('calls the logOut function once when Ctrl+H is pressed', async () => {
+    const logOut = jest.fn();
+    render(<App logOut={logOut} />);
 
-    // Test if app component renders Login component
-    it.skip("Renders Login Component", () => {
-        const loginText = screen.getByText(/Login to access the full dashboard/i);
-        expect(loginText).toBeInTheDocument();
-    });
+    await userEvent.keyboard('{Control>}h{/Control}');
 
-    // Test if app component renders Footer component
-    it.skip("Renders Footer Component", () => {
-        expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
-    });
+    expect(logOut).toHaveBeenCalledTimes(1);
+  });
 
-    // Test if login is rendered when isLoggedIn is false
-    it.skip("CourseList is rendered when isLoggedIn is false", () => {
-        cleanup();
+  it('calls alert with Logging you out when Ctrl+H is pressed', async () => {
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
 
-        const rendered = render(<App />);
-        const container = rendered.container;
+    render(<App />);
 
-        // Get courseList
-        const loginComponent = container.querySelector(".App-body");
+    await userEvent.keyboard('{Control>}h{/Control}');
 
-        // Assert that CourseList exists
-        expect(loginComponent).toBeInTheDocument();
-    });
+    expect(alertMock).toHaveBeenCalledWith('Logging you out');
 
-    // Test if courseList is rendered when isLoggedIn is true
-    it.skip("CourseList is rendered when isLoggedIn is true", () => {
-        cleanup();
-
-        const rendered = render(<App isLoggedIn={true} />);
-        const container = rendered.container;
-
-        // Get courseList
-        const courseList = container.querySelector("#CourseList");
-
-        // Assert that CourseList exists
-        expect(courseList).toBeInTheDocument();
-    });
-
-    // Test if logOut function is called once when ctrl h combo is clicked
-    it("Logout function gets called once", async () => {
-        cleanup();
-
-        // Prop function
-        const logOut = jest.fn();
-
-        render(<App logOut={logOut} />);
-
-        // Simulate keyboard combo click
-        await userEvent.keyboard("{Control>}h{/Control}");
-
-        // Assert that logOut gets called once
-        expect(logOut).toBeCalledTimes(1);
-    });
-
-    // Test if alert function is called and has correct string
-    it("Alert function is called with correct message", async () => {
-        cleanup();
-
-        render(<App />);
-
-        // Simulate keyboard combo click
-        await userEvent.keyboard("{Control>}h{/Control}");
-
-        // Assert that alert is called with 'Logging you out'
-        expect(alertSpy).toHaveBeenCalledWith("Logging you out");
-    });
+    alertMock.mockRestore();
+  });
 });
