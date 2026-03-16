@@ -6,6 +6,7 @@ function Notifications() {
   return (
     <div className="Notifications">
       <button
+        aria-label="Close"
         style={{
           background: "transparent",
           border: "none",
@@ -13,19 +14,16 @@ function Notifications() {
           right: "10px",
           top: "10px",
         }}
-        aria-label="Close"
         onClick={() => console.log("Close button has been clicked")}
       >
-        <img src={closeIcon} alt="Close icon" width="10px" />
+        <img src={closeIcon} alt="Close icon" width={10} />
       </button>
 
       <p>Here is the list of notifications</p>
 
       <ul>
         <li data-priority="default">New course available</li>
-
         <li data-priority="urgent">New resume available</li>
-
         <li
           data-priority="urgent"
           dangerouslySetInnerHTML={{
