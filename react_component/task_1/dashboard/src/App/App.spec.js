@@ -2,9 +2,17 @@ import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
 
-global.alert = jest.fn();
-
 describe("App Component", () => {
+    let alertSpy;
+
+    beforeAll(() => {
+        alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
+    });
+
+    afterAll(() => {
+        alertSpy.mockRestore();
+    });
+
     beforeEach(() => {
         // Render app component
         render(<App />);
@@ -72,14 +80,11 @@ describe("App Component", () => {
 
         // Assert that logOut gets called once
         expect(logOut).toBeCalledTimes(1);
-    })
+    });
 
     // Test if alert function is called and has correct string
-    it("Alert function is called", async () => {
+    it("Alert function is called with correct message", async () => {
         cleanup();
-
-        // Spy on alert function
-        // const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
 
         render(<App />);
 
@@ -87,8 +92,6 @@ describe("App Component", () => {
         await userEvent.keyboard("{Control>}h{/Control}");
 
         // Assert that alert is called with 'Logging you out'
-        expect(global.alert).toHaveBeenCalledWith("Logging you out");
-
-        // alertSpy.mockRestore();
-    })
+        expect(alertSpy).toHaveBeenCalledWith("Logging you out");
+    });
 });

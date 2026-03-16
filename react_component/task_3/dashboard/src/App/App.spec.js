@@ -44,4 +44,13 @@ describe("App Component", () => {
 
         expect(courseList).toBeInTheDocument();
     });
+
+    it("renders News from the School section with correct content", () => {
+        cleanup();
+
+        render(<App />);
+
+        expect(screen.getByText(/News from the School/i)).toBeInTheDocument();
+        expect(screen.getByText(/Holberton School News goes here/i)).toBeInTheDocument();
+    });
 });
