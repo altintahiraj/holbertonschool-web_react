@@ -4,10 +4,7 @@ import Notifications from "./Notifications";
 
 describe("Notifications Component", () => {
     it("calls markNotificationAsRead when notification is clicked", () => {
-        const notifications = [
-            { id: 1, type: "default", value: "New course available" },
-        ];
-
+        const notifications = [{ id: 1, type: "default", value: "New course available" }];
         const markNotificationAsRead = jest.fn();
 
         render(
@@ -25,51 +22,25 @@ describe("Notifications Component", () => {
     });
 
     it("does not re-render if props are the same (PureComponent)", () => {
-        const notifications = [
-            { id: 1, type: "default", value: "Notification 1" },
-        ];
-
+        const notifications = [{ id: 1, type: "default", value: "Notification 1" }];
         const markNotificationAsRead = jest.fn();
-
         const { rerender } = render(
-            <Notifications
-                notifications={notifications}
-                displayDrawer={true}
-                markNotificationAsRead={markNotificationAsRead}
-            />
+            <Notifications notifications={notifications} displayDrawer={true} markNotificationAsRead={markNotificationAsRead} />
         );
 
-        const updatedNotifications = [
-            { id: 1, type: "default", value: "Updated Notification 1" },
-        ];
-
+        const updatedNotifications = [{ id: 1, type: "default", value: "Updated Notification 1" }];
         rerender(
-            <Notifications
-                notifications={updatedNotifications}
-                displayDrawer={true}
-                markNotificationAsRead={markNotificationAsRead}
-            />
+            <Notifications notifications={updatedNotifications} displayDrawer={true} markNotificationAsRead={markNotificationAsRead} />
         );
 
-        // Should not re-render because array length is the same
-        expect(
-            screen.queryByText("Updated Notification 1")
-        ).not.toBeInTheDocument();
+        expect(screen.queryByText("Updated Notification 1")).not.toBeInTheDocument();
     });
 
     it("re-renders if notifications length changes", () => {
-        const notifications = [
-            { id: 1, type: "default", value: "Notification 1" },
-        ];
-
+        const notifications = [{ id: 1, type: "default", value: "Notification 1" }];
         const markNotificationAsRead = jest.fn();
-
         const { rerender } = render(
-            <Notifications
-                notifications={notifications}
-                displayDrawer={true}
-                markNotificationAsRead={markNotificationAsRead}
-            />
+            <Notifications notifications={notifications} displayDrawer={true} markNotificationAsRead={markNotificationAsRead} />
         );
 
         const updatedNotifications = [
@@ -78,11 +49,7 @@ describe("Notifications Component", () => {
         ];
 
         rerender(
-            <Notifications
-                notifications={updatedNotifications}
-                displayDrawer={true}
-                markNotificationAsRead={markNotificationAsRead}
-            />
+            <Notifications notifications={updatedNotifications} displayDrawer={true} markNotificationAsRead={markNotificationAsRead} />
         );
 
         expect(screen.getByText("Notification 2")).toBeInTheDocument();
@@ -91,52 +58,24 @@ describe("Notifications Component", () => {
     it("calls handleDisplayDrawer when clicking on menu item", () => {
         const handleDisplayDrawer = jest.fn();
         const markNotificationAsRead = jest.fn();
-
-        render(
-            <Notifications
-                notifications={[]}
-                displayDrawer={false}
-                handleDisplayDrawer={handleDisplayDrawer}
-                markNotificationAsRead={markNotificationAsRead}
-            />
-        );
-
+        render(<Notifications notifications={[]} displayDrawer={false} handleDisplayDrawer={handleDisplayDrawer} markNotificationAsRead={markNotificationAsRead} />);
         const menuItem = screen.getByText("Your notifications");
         fireEvent.click(menuItem);
-
         expect(handleDisplayDrawer).toHaveBeenCalled();
     });
 
     it("calls handleHideDrawer when clicking on close button", () => {
         const handleHideDrawer = jest.fn();
         const markNotificationAsRead = jest.fn();
-
-        render(
-            <Notifications
-                notifications={[{ id: 1, type: "default", value: "Test" }]}
-                displayDrawer={true}
-                handleHideDrawer={handleHideDrawer}
-                markNotificationAsRead={markNotificationAsRead}
-            />
-        );
-
+        render(<Notifications notifications={[{ id: 1, type: "default", value: "Test" }]} displayDrawer={true} handleHideDrawer={handleHideDrawer} markNotificationAsRead={markNotificationAsRead} />);
         const button = screen.getByRole("button", { name: /close/i });
         fireEvent.click(button);
-
         expect(handleHideDrawer).toHaveBeenCalled();
     });
 
     it("displays 'No new notification for now' when notifications list is empty", () => {
         const markNotificationAsRead = jest.fn();
-
-        render(
-            <Notifications
-                notifications={[]}
-                displayDrawer={true}
-                markNotificationAsRead={markNotificationAsRead}
-            />
-        );
-
+        render(<Notifications notifications={[]} displayDrawer={true} markNotificationAsRead={markNotificationAsRead} />);
         expect(screen.getByText("No new notification for now")).toBeInTheDocument();
     });
 });

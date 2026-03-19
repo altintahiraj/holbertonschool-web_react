@@ -16,10 +16,7 @@ class Notifications extends React.PureComponent {
 
         return (
             <div className="notifications-container">
-                <div
-                    className="notification-title"
-                    onClick={handleDisplayDrawer}
-                >
+                <div className="notification-title" onClick={handleDisplayDrawer}>
                     Your notifications
                 </div>
 
@@ -29,7 +26,7 @@ class Notifications extends React.PureComponent {
                             <>
                                 <p>Here is the list of notifications</p>
                                 <ul>
-                                    {notifications.map((notification) => (
+                                    {notifications.map(notification => (
                                         <NotificationItem
                                             key={notification.id}
                                             id={notification.id}
@@ -45,11 +42,7 @@ class Notifications extends React.PureComponent {
                             <p>No new notification for now</p>
                         )}
 
-                        <button
-                            aria-label="Close"
-                            onClick={handleHideDrawer}
-                            className="close-button"
-                        >
+                        <button aria-label="Close" onClick={handleHideDrawer} className="close-button">
                             <img alt="Close Button" src={closeIcon} />
                         </button>
                     </div>
