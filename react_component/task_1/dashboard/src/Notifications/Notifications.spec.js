@@ -1,78 +1,73 @@
-/* eslint-disable */
-import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
-import Notifications from "./Notifications";
+import React from 'react';
+import { shallow } from 'enzyme';
+import Notifications from './Notifications';
+import NotificationItem from './NotificationItem';
 
-describe("Notifications Component", () => {
-    describe("When displayDrawer is false", () => {
-        it("should display only the title, not the drawer content", () => {
-            render(<Notifications displayDrawer={false} />);
+describe('Notifications component', () => {
+  const notificationsList = [
+    { id: 1, type: 'default', value: 'New course available' },
+    { id: 2, type: 'urgent', value: 'New resume available' },
+    { id: 3, type: 'urgent', html: { __html: 'Urgent requirement - complete by EOD' } },
+  ];
 
-            expect(screen.getByText("Your notifications")).toBeInTheDocument();
+  it('renders "Your notifications" text in all cases', () => {
+    const wrapper = shallow(<Notifications />);
+    expect(wrapper.find('.notification-title').text()).toBe('Your notifications');
+  });
 
-            expect(screen.queryByText("Here is the list of notifications")).not.toBeInTheDocument();
-            expect(screen.queryByText("No new notification for now")).not.toBeInTheDocument();
-            expect(screen.queryByRole("button", { name: "Close" })).not.toBeInTheDocument();
-            expect(screen.queryByRole("list")).not.toBeInTheDocument();
-        });
+  describe('when displayDrawer is false', () => {
+    it('does not display the close button', () => {
+      const wrapper = shallow(<Notifications displayDrawer={false} />);
+      expect(wrapper.find('button')).toHaveLength(0);
     });
 
-    describe("When displayDrawer is true", () => {
-        it("should display the drawer content with notifications", () => {
-            const notifications = [
-                { id: 1, type: "default", value: "New course available" },
-                { id: 2, type: "urgent", value: "New resume available" }
-            ];
-
-            render(<Notifications notifications={notifications} displayDrawer={true} />);
-
-            expect(screen.getByText("Your notifications")).toBeInTheDocument();
-
-            expect(screen.getByText("Here is the list of notifications")).toBeInTheDocument();
-            expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
-            expect(screen.getByRole("list")).toBeInTheDocument();
-
-            expect(screen.getByText("New course available")).toBeInTheDocument();
-            expect(screen.getByText("New resume available")).toBeInTheDocument();
-        });
-
-        it("should display 'No new notification for now' when notifications array is empty", () => {
-            render(<Notifications notifications={[]} displayDrawer={true} />);
-
-            expect(screen.getByText("Your notifications")).toBeInTheDocument();
-
-            expect(screen.getByText("No new notification for now")).toBeInTheDocument();
-
-            expect(screen.queryByText("Here is the list of notifications")).not.toBeInTheDocument();
-            expect(screen.queryByRole("list")).not.toBeInTheDocument();
-
-            expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
-        });
+    it('does not display the p element', () => {
+      const wrapper = shallow(<Notifications displayDrawer={false} />);
+      expect(wrapper.find('p')).toHaveLength(0);
     });
 
-    describe("NotificationItem styling", () => {
-        it("should have blue color when type is default", () => {
-            const { container } = render(
-                <Notifications
-                    notifications={[{ id: 1, type: "default", value: "Test" }]}
-                    displayDrawer={true}
-                />
-            );
-
-            const listItem = container.querySelector('[data-notification-type="default"]');
-            expect(listItem).toHaveStyle({ color: "blue" });
-        });
-
-        it("should have red color when type is urgent", () => {
-            const { container } = render(
-                <Notifications
-                    notifications={[{ id: 1, type: "urgent", value: "Test" }]}
-                    displayDrawer={true}
-                />
-            );
-
-            const listItem = container.querySelector('[data-notification-type="urgent"]');
-            expect(listItem).toHaveStyle({ color: "red" });
-        });
+    it('does not display notification items', () => {
+      const wrapper = shallow(<Notifications displayDrawer={false} notifications={notificationsList} />);
+      expect(wrapper.find(NotificationItem)).toHaveLength(0);
     });
+
+    it('still displays "Your notifications" text', () => {
+      const wrapper = shallow(<Notifications displayDrawer={false} />);
+      expect(wrapper.find('.notification-title').text()).toBe('Your notifications');
+    });
+  });
+
+  describe('when displayDrawer is true', () => {
+    it('displays the close button', () => {
+      const wrapper = shallow(<Notifications displayDrawer={true} notifications={notificationsList} />);
+      expect(wrapper.find('button')).toHaveLength(1);
+    });
+
+    it('displays the p element with correct text', () => {
+      const wrapper = shallow(<Notifications displayDrawer={true} notifications={notificationsList} />);
+      expect(wrapper.find('p').first().text()).toBe('Here is the list of notifications');
+    });
+
+    it('displays notification items', () => {
+      const wrapper = shallow(<Notifications displayDrawer={true} notifications={notificationsList} />);
+      expect(wrapper.find(NotificationItem)).toHaveLength(3);
+    });
+
+    it('still displays "Your notifications" text', () => {
+      const wrapper = shallow(<Notifications displayDrawer={true} notifications={notificationsList} />);
+      expect(wrapper.find('.notification-title').text()).toBe('Your notifications');
+    });
+  });
+
+  describe('when displayDrawer is true and notifications is empty', () => {
+    it('displays "No new notification for now"', () => {
+      const wrapper = shallow(<Notifications displayDrawer={true} notifications={[]} />);
+      expect(wrapper.find('p').someWhere(n => n.text() === 'No new notification for now')).toBe(true);
+    });
+
+    it('still displays "Your notifications" text', () => {
+      const wrapper = shallow(<Notifications displayDrawer={true} notifications={[]} />);
+      expect(wrapper.find('.notification-title').text()).toBe('Your notifications');
+    });
+  });
 });

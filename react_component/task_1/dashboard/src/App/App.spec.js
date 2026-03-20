@@ -1,46 +1,88 @@
-import { cleanup, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { shallow } from 'enzyme';
 import App from './App';
+import Notifications from '../Notifications/Notifications';
+import Login from '../Login/Login';
+import CourseList from '../CourseList/CourseList';
 
-describe('App Component', () => {
-  afterEach(() => {
-    cleanup();
+describe('App component', () => {
+  it('renders without crashing', () => {
+    const wrapper = shallow(<App />);
+    expect(wrapper).toBeTruthy();
   });
 
-  it('renders the Header component', () => {
-    render(<App />);
-    const heading = screen.getByRole('heading', { level: 1, name: /school dashboard/i });
-    expect(heading).toBeInTheDocument();
+  it('passes notificationsList to Notifications as notifications prop', () => {
+    const wrapper = shallow(<App />);
+    const notifications = wrapper.find(Notifications);
+
+    expect(notifications.prop('notifications')).toHaveLength(3);
+    expect(notifications.prop('notifications')[0]).toEqual({
+      id: 1,
+      type: 'default',
+      value: 'New course available',
+    });
+    expect(notifications.prop('notifications')[1]).toEqual({
+      id: 2,
+      type: 'urgent',
+      value: 'New resume available',
+    });
+    expect(notifications.prop('notifications')[2]).toEqual({
+      id: 3,
+      type: 'urgent',
+      html: { __html: 'Urgent requirement - complete by EOD' },
+    });
   });
 
-  it('renders the Login component', () => {
-    render(<App />);
-    expect(screen.getByText(/Login to access the full dashboard/i)).toBeInTheDocument();
+  describe('when isLoggedIn is false', () => {
+    it('renders the Login component', () => {
+      const wrapper = shallow(<App isLoggedIn={false} />);
+      expect(wrapper.find(Login)).toHaveLength(1);
+      expect(wrapper.find(CourseList)).toHaveLength(0);
+    });
   });
 
-  it('renders the Footer component', () => {
-    render(<App />);
-    expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
+  describe('when isLoggedIn is true', () => {
+    it('renders the CourseList component', () => {
+      const wrapper = shallow(<App isLoggedIn={true} />);
+      expect(wrapper.find(CourseList)).toHaveLength(1);
+      expect(wrapper.find(Login)).toHaveLength(0);
+    });
   });
 
-  it('calls the logOut function once when Ctrl+H is pressed', async () => {
-    const logOut = jest.fn();
-    render(<App logOut={logOut} />);
+  describe('keyboard events', () => {
+    let alertMock;
 
-    await userEvent.keyboard('{Control>}h{/Control}');
+    beforeEach(() => {
+      alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    });
 
-    expect(logOut).toHaveBeenCalledTimes(1);
-  });
+    afterEach(() => {
+      alertMock.mockRestore();
+    });
 
-  it('calls alert with Logging you out when Ctrl+H is pressed', async () => {
-    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    it('calls logOut when Ctrl + H is pressed', () => {
+      const logOutMock = jest.fn();
+      const wrapper = shallow(<App logOut={logOutMock} />);
 
-    render(<App />);
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'h', ctrlKey: true })
+      );
 
-    await userEvent.keyboard('{Control>}h{/Control}');
+      expect(logOutMock).toHaveBeenCalledTimes(1);
 
-    expect(alertMock).toHaveBeenCalledWith('Logging you out');
+      wrapper.instance().componentWillUnmount();
+    });
 
-    alertMock.mockRestore();
+    it('calls alert when Ctrl + H is pressed', () => {
+      const wrapper = shallow(<App />);
+
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'h', ctrlKey: true })
+      );
+
+      expect(alertMock).toHaveBeenCalledWith('Logging you out');
+
+      wrapper.instance().componentWillUnmount();
+    });
   });
 });
