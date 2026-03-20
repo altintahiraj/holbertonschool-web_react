@@ -1,33 +1,54 @@
-import React from 'react';
-import { shallow } from 'enzyme';
-import CourseListRow from './CourseListRow';
+import { render, screen } from "@testing-library/react";
+import CourseListRow from "./CourseListRow";
 
-describe('CourseListRow component', () => {
-  describe('when isHeader is true', () => {
-    it('renders one th with colspan=2 when textSecondCell is null', () => {
-      const wrapper = shallow(
-        <CourseListRow isHeader={true} textFirstCell="First" />
-      );
-      const th = wrapper.find('th');
-      expect(th).toHaveLength(1);
-      expect(th.prop('colSpan')).toBe(2);
+describe("Test CourseListRow Component", () => {
+
+    it("One column header is rendered", () => {
+        render(
+            <table>
+                <thead>
+                    <CourseListRow isHeader={true} textFirstCell={"Khiba Koenane"} />
+                </thead>
+            </table>
+        );
+
+        const tableHeader = screen.getByRole("columnheader");
+
+        expect(tableHeader).toBeInTheDocument();
+
+        expect(tableHeader).toHaveAttribute("colSpan", "2");
     });
 
-    it('renders two th elements when textSecondCell is not null', () => {
-      const wrapper = shallow(
-        <CourseListRow isHeader={true} textFirstCell="First" textSecondCell="Second" />
-      );
-      expect(wrapper.find('th')).toHaveLength(2);
-    });
-  });
 
-  describe('when isHeader is false', () => {
-    it('renders two td elements within a tr element', () => {
-      const wrapper = shallow(
-        <CourseListRow isHeader={false} textFirstCell="First" textSecondCell="Second" />
-      );
-      expect(wrapper.find('tr')).toHaveLength(1);
-      expect(wrapper.find('td')).toHaveLength(2);
+    it("Two column headers are rendered", () => {
+        render(
+            <table>
+                <thead>
+                    <CourseListRow
+                        isHeader={true}
+                        textFirstCell={"Khiba"}
+                        textSecondCell={"Koenane"}
+                    />
+                </thead>
+            </table>
+        );
+
+        const tableHeaders = screen.getAllByRole("columnheader");
+
+        expect(tableHeaders.length).toBe(2);
     });
-  });
+
+    it("Two td elements are rendered", () => {
+        render(
+            <table>
+                <tbody>
+                    <CourseListRow textFirstCell={"Khiba"} textSecondCell={"Koenane"} />
+                </tbody>
+            </table>
+        );
+
+        const tableElements = screen.getAllByRole("cell");
+
+        expect(tableElements.length).toBe(2);
+    });
 });

@@ -1,29 +1,74 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import Login from './Login';
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import Login from "./Login";
 
-test('Login renders without crashing', () => {
-  render(<Login />);
-});
+let container = null;
 
-test('Login includes 2 labels, 2 inputs, and 1 button', () => {
-  const { container } = render(<Login />);
-  expect(container.querySelectorAll('label')).toHaveLength(2);
-  expect(container.querySelectorAll('input')).toHaveLength(2);
-  expect(container.querySelectorAll('button')).toHaveLength(1);
-});
+describe("Login Component", () => {
+    beforeEach(() => {
+        const rendered = render(<Login />);
+        container = rendered.container;
+    });
 
-test('inputs get focused when related label is clicked', async () => {
-  const user = userEvent.setup();
-  render(<Login />);
+    // Test if Login paragraph has correct text
+    it("Login has correct text", () => {
+        const loginText = screen.getByText(/Login to access the full dashboard/i);
 
-  const emailInput = screen.getByLabelText(/email/i);
-  const passwordInput = screen.getByLabelText(/password/i);
+        expect(loginText).toBeInTheDocument();
+    });
 
-  await user.click(screen.getByText(/email/i));
-  expect(emailInput).toHaveFocus();
+    // Test if Login renders two input elements, two labels and button
+    it("renders two input elements, two labels and button", () => {
+        //Get input elements
+        const inputElements = container.querySelectorAll("input");
+        const inputLength = inputElements.length;
 
-  await user.click(screen.getByText(/password/i));
-  expect(passwordInput).toHaveFocus();
+        // Get labels
+        const labelElements = container.querySelectorAll("label");
+        const labelsLength = labelElements.length;
+
+        //Get button
+        const button = screen.getByRole("button");
+
+        // Assert number of input elements
+        expect(inputLength).toEqual(2);
+
+        // Assert number of label elements
+        expect(labelsLength).toEqual(2);
+
+        // Assert existance of button
+        expect(button).toBeInTheDocument();
+    });
+
+    //Test if labels have correct values
+    it("Labels have correct values", () => {
+        const email = screen.getByLabelText(/Email/i);
+        const password = screen.getByLabelText(/Password/i);
+
+        // Assert label values
+        expect(email).toBeInTheDocument();
+        expect(password).toBeInTheDocument();
+    });
+
+    //Test if button has correct value
+    it("Button has correct value", () => {
+        //Get button
+        const button = screen.getByRole("button");
+
+        // Assert if button has correct value
+        expect(button.textContent).toBe("OK");
+    });
+
+    // Test if click on label triggeres focus on input element
+    it("On label click triggers focus", async () => {
+        // Get email related elements
+        const emailLabel = screen.getByLabelText(/Email/i);
+        const inputField = screen.getByRole("textbox", { name: /email/i });
+
+        // Simulate click on label
+        await userEvent.click(emailLabel);
+
+        // Assert if input gets focused
+        expect(inputField).toHaveFocus();
+    });
 });

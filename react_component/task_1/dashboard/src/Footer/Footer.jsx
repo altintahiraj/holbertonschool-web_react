@@ -1,11 +1,14 @@
+import React from 'react'
+import { getCurrentYear, getFooterCopy } from '../utils/utils'
 import './Footer.css'
-import { getCurrentYear, getFooterCopy } from '../utils/utils';
 
-const Footer = () =>{
-    return(
-        <div className='App-footer'>
-            <p>Copyright {getCurrentYear()} - {getFooterCopy(true)}</p>
-          </div>
+const Footer = () => {
+    return (
+        <div className="App-footer">
+            <p>
+                Copyright {getCurrentYear()} - {getFooterCopy(true)}
+            </p>
+        </div>
     )
 }
 

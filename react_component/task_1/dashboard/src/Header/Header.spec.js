@@ -1,20 +1,23 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import Header from './Header';
+import { render, screen } from "@testing-library/react";
+import Header from "./Header";
 
-test('Header renders without crashing', () => {
-  render(<Header />);
-});
+describe("Header Component", () => {
+    beforeEach(() => {
+        render(<Header />);
+    });
 
-test('Header contains the Holberton logo', () => {
-  render(<Header />);
-  const logo = screen.getByAltText(/holberton logo/i);
-  expect(logo).toBeInTheDocument();
-});
+    // Test if Header renders correct text
+    it("Renders correct text", () => {
+        const heading = screen.getByRole("heading", {
+            level: 1,
+            name: /School Dashboard/i,
+        });
+        expect(heading).toBeInTheDocument();
+    });
 
-test('Header contains h1 with correct text', () => {
-  render(<Header />);
-  const heading = screen.getByRole('heading', { name: /School dashboard/i });
-  expect(heading).toBeInTheDocument();
-  expect(heading.tagName).toBe('H1'); // safe uppercase check
+    // Test if Header renders image
+    it("Renders an image", () => {
+        const image = screen.getByAltText(/holberton logo/i);
+        expect(image).toBeInTheDocument();
+    });
 });

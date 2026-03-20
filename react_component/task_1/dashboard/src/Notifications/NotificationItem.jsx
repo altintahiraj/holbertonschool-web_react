@@ -1,33 +1,25 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+/* eslint-disable */
 
-function NotificationItem({ type = 'default', value = '', html = null }) {
-  const color = type === 'urgent' ? 'red' : 'blue';
+import React from "react";
 
-  if (html) {
+const NotificationItem = ({ type = "default", html, value }) => {
+    const style = type === "urgent" ? { color: "red" } : { color: "blue" };
+
+    if (html) {
+        return (
+            <li
+                data-notification-type={type}
+                style={style}
+                dangerouslySetInnerHTML={html}
+            />
+        );
+    }
+
     return (
-      <li
-        data-notification-type={type}
-        style={{ color }}
-        dangerouslySetInnerHTML={html}
-      />
+        <li data-notification-type={type} style={style}>
+            {value}
+        </li>
     );
-  }
-
-  return (
-    <li
-      data-notification-type={type}
-      style={{ color }}
-    >
-      {value}
-    </li>
-  );
-}
-
-NotificationItem.propTypes = {
-  type: PropTypes.string,
-  value: PropTypes.string,
-  html: PropTypes.shape({ __html: PropTypes.string }),
 };
 
 export default NotificationItem;
