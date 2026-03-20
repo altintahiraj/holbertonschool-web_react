@@ -1,23 +1,24 @@
-/* eslint-disable */
-import React, { useContext } from "react";
+import React from "react";
 import { getCurrentYear, getFooterCopy } from "../utils/utils";
 import AppContext from "../Context/context";
 import "./Footer.css";
 
 const Footer = () => {
-    const { user } = useContext(AppContext);
-
     return (
-        <div className="App-footer">
-            <p>
-                Copyright {getCurrentYear()} - {getFooterCopy(true)}
-            </p>
-            {user.isLoggedIn && (
-                <p>
-                    <a href="#contact">Contact us</a>
-                </p>
+        <AppContext.Consumer>
+            {({ user }) => (
+                <div className="App-footer">
+                    <p>
+                        Copyright {getCurrentYear()} - {getFooterCopy(true)}
+                    </p>
+                    {user.isLoggedIn && (
+                        <p>
+                            <a href="#contact">Contact us</a>
+                        </p>
+                    )}
+                </div>
             )}
-        </div>
+        </AppContext.Consumer>
     );
 };
 
