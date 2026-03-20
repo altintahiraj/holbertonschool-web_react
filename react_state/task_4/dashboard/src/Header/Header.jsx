@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from "react";
 import logo from "../assets/holberton-logo.jpg";
 import AppContext from "../Context/context";

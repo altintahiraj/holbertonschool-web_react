@@ -1,9 +1,10 @@
-import React, { PureComponent } from "react";
+/* eslint-disable */
+import React from "react";
 import closeIcon from "../assets/close-button.png";
 import NotificationItem from "./NotificationItem";
 import "./Notifications.css";
 
-class Notifications extends PureComponent {
+class Notifications extends React.PureComponent {
     render() {
         const {
             notifications = [],

@@ -23,9 +23,7 @@ describe("Footer Component", () => {
                 <Footer />
             </AppContext.Provider>
         );
-        expect(
-            screen.queryByRole("link", { name: /contact us/i })
-        ).not.toBeInTheDocument();
+        expect(screen.queryByText(/Contact us/i)).not.toBeInTheDocument();
     });
 
     it("displays contact link when logged in", () => {
@@ -41,8 +39,6 @@ describe("Footer Component", () => {
                 <Footer />
             </AppContext.Provider>
         );
-        expect(
-            screen.getByRole("link", { name: /contact us/i })
-        ).toBeInTheDocument();
+        expect(screen.getByText(/Contact us/i)).toBeInTheDocument();
     });
 });

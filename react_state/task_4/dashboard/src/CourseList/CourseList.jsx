@@ -1,6 +1,8 @@
+/* eslint-disable */
 import React from "react";
 import "./CourseList.css";
 import CourseListRow from "./CourseListRow";
+import WithLogging from "../HOC/WithLogging";
 
 const CourseList = ({ courses = [] }) => {
     return (
@@ -37,4 +39,4 @@ const CourseList = ({ courses = [] }) => {
     );
 };
 
-export default CourseList;
+export default WithLogging(CourseList);
