@@ -1,7 +1,5 @@
-/* eslint-disable */
 import React, { Component } from "react";
 import "./Login.css";
-import WithLogging from "../HOC/WithLogging";
 
 class Login extends Component {
     constructor(props) {
@@ -85,4 +83,4 @@ class Login extends Component {
     }
 }
 
-export default WithLogging(Login);
+export default Login;

@@ -56,6 +56,27 @@ describe("App Component", () => {
         expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
     });
 
+    it("shows Contact us link only after successful login", async () => {
+        cleanup();
+        render(<App />);
+
+        expect(
+            screen.queryByRole("link", { name: /contact us/i })
+        ).not.toBeInTheDocument();
+
+        const email = screen.getByLabelText(/Email/i);
+        const password = screen.getByLabelText(/Password/i);
+        const button = screen.getByRole("button");
+
+        await userEvent.type(email, "test@test.com");
+        await userEvent.type(password, "password123");
+        await userEvent.click(button);
+
+        expect(
+            screen.getByRole("link", { name: /contact us/i })
+        ).toBeInTheDocument();
+    });
+
     it("removes notification when clicked and logs to console", async () => {
         cleanup();
         const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
