@@ -1,30 +1,42 @@
-import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
-import BodySectionWithMarginBottom from "./BodySectionWithMarginBottom";
+import React from 'react';
+import { shallow } from 'enzyme';
+import BodySectionWithMarginBottom from './BodySectionWithMarginBottom';
+import BodySection from '../BodySection/BodySection';
 
-describe("BodySectionWithMarginBottom Component", () => {
+describe('BodySectionWithMarginBottom component', () => {
+  it('renders a div with class bodySectionWithMargin', () => {
+    const wrapper = shallow(
+      <BodySectionWithMarginBottom title="test">
+        <p>test</p>
+      </BodySectionWithMarginBottom>
+    );
+    expect(wrapper.find('.bodySectionWithMargin')).toHaveLength(1);
+  });
 
-    it("contains div with class bodySectionWithMargin", () => {
-        const { container } = render(
-            <BodySectionWithMarginBottom title="Test title">
-                <p>Child</p>
-            </BodySectionWithMarginBottom>
-        );
+  it('renders the BodySection component', () => {
+    const wrapper = shallow(
+      <BodySectionWithMarginBottom title="test">
+        <p>test</p>
+      </BodySectionWithMarginBottom>
+    );
+    expect(wrapper.find(BodySection)).toHaveLength(1);
+  });
 
-        const div = container.querySelector(".bodySectionWithMargin");
+  it('passes the title prop to BodySection', () => {
+    const wrapper = shallow(
+      <BodySectionWithMarginBottom title="test title">
+        <p>test</p>
+      </BodySectionWithMarginBottom>
+    );
+    expect(wrapper.find(BodySection).prop('title')).toBe('test title');
+  });
 
-        expect(div).toBeInTheDocument();
-    });
-
-    it("renders the BodySection component", () => {
-        render(
-            <BodySectionWithMarginBottom title="Test title">
-                <p>Child content</p>
-            </BodySectionWithMarginBottom>
-        );
-
-        expect(screen.getByRole("heading")).toHaveTextContent("Test title");
-        expect(screen.getByText("Child content")).toBeInTheDocument();
-    });
-
+  it('passes children to BodySection', () => {
+    const wrapper = shallow(
+      <BodySectionWithMarginBottom title="test">
+        <p>child content</p>
+      </BodySectionWithMarginBottom>
+    );
+    expect(wrapper.find(BodySection).prop('children')).toBeTruthy();
+  });
 });

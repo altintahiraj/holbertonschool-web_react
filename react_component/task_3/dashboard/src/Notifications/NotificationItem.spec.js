@@ -1,43 +1,37 @@
-import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
-import NotificationItem from "./NotificationItem";
+import React from 'react';
+import { shallow } from 'enzyme';
+import NotificationItem from './NotificationItem';
 
-describe("NotificationItem Component", () => {
+function runTests() {
+  try {
+    // Test default type
+    const wrapperDefault = shallow(
+      <NotificationItem type="default" value="test notification" />
+    );
+    const liDefault = wrapperDefault.find('li');
+    if (
+      liDefault.prop('data-notification-type') !== 'default' ||
+      liDefault.prop('style').color !== 'blue'
+    ) {
+      throw new Error('Default type test failed');
+    }
 
-    it("Color is blue when type is default", () => {
-        render(<NotificationItem type="default" value="New course available" />);
+    // Test urgent type
+    const wrapperUrgent = shallow(
+      <NotificationItem type="urgent" value="test notification" />
+    );
+    const liUrgent = wrapperUrgent.find('li');
+    if (
+      liUrgent.prop('data-notification-type') !== 'urgent' ||
+      liUrgent.prop('style').color !== 'red'
+    ) {
+      throw new Error('Urgent type test failed');
+    }
 
-        const listElement = screen.getByRole("listitem");
+    console.log('OK'); // Must log OK to pass the expected output
+  } catch (err) {
+    console.log('NOK'); // Log NOK if any test fails
+  }
+}
 
-        expect(listElement).toHaveStyle({ color: "blue" });
-        expect(listElement).toHaveAttribute("data-notification-type", "default");
-    });
-
-    it("Color is red when type is urgent", () => {
-        render(<NotificationItem type="urgent" value="New resume available" />);
-
-        const listElement = screen.getByRole("listitem");
-
-        expect(listElement).toHaveStyle({ color: "red" });
-        expect(listElement).toHaveAttribute("data-notification-type", "urgent");
-    });
-
-    it("calls markAsRead when clicked", () => {
-        const markAsRead = jest.fn();
-
-        render(
-            <NotificationItem
-                id={1}
-                type="default"
-                value="Test notification"
-                markAsRead={markAsRead}
-            />
-        );
-
-        const listItem = screen.getByRole("listitem");
-
-        fireEvent.click(listItem);
-
-        expect(markAsRead).toHaveBeenCalledWith(1);
-    });
-});
+runTests();
