@@ -3,6 +3,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import Notifications from "./Notifications";
 
 describe("Notifications Component", () => {
+    it("is a PureComponent", () => {
+        expect(Notifications.prototype.isPureReactComponent).toBe(true);
+    });
+
     it("calls markNotificationAsRead when notification is clicked", () => {
         const notifications = [{ id: 1, type: "default", value: "New course available" }];
         const markNotificationAsRead = jest.fn();
@@ -21,7 +25,22 @@ describe("Notifications Component", () => {
         expect(markNotificationAsRead).toHaveBeenCalledWith(1);
     });
 
-    it("does not re-render if props are the same (PureComponent)", () => {
+    it("does not re-render when props keep the same references", () => {
+        const notifications = [{ id: 1, type: "default", value: "Notification 1" }];
+        const markNotificationAsRead = jest.fn();
+        const { rerender } = render(
+            <Notifications notifications={notifications} displayDrawer={true} markNotificationAsRead={markNotificationAsRead} />
+        );
+
+        notifications[0].value = "Updated Notification 1";
+        rerender(
+            <Notifications notifications={notifications} displayDrawer={true} markNotificationAsRead={markNotificationAsRead} />
+        );
+
+        expect(screen.queryByText("Updated Notification 1")).not.toBeInTheDocument();
+    });
+
+    it("re-renders when notifications prop changes", () => {
         const notifications = [{ id: 1, type: "default", value: "Notification 1" }];
         const markNotificationAsRead = jest.fn();
         const { rerender } = render(
@@ -29,11 +48,12 @@ describe("Notifications Component", () => {
         );
 
         const updatedNotifications = [{ id: 1, type: "default", value: "Updated Notification 1" }];
+
         rerender(
             <Notifications notifications={updatedNotifications} displayDrawer={true} markNotificationAsRead={markNotificationAsRead} />
         );
 
-        expect(screen.queryByText("Updated Notification 1")).not.toBeInTheDocument();
+        expect(screen.getByText("Updated Notification 1")).toBeInTheDocument();
     });
 
     it("re-renders if notifications length changes", () => {

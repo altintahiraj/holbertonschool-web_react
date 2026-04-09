@@ -44,7 +44,7 @@ describe("Header Component", () => {
         const user = {
             email: "test@test.com",
             password: "password123",
-            isLoggedIn: true
+            isLoggedIn: true,
         };
 
         render(
@@ -56,7 +56,7 @@ describe("Header Component", () => {
         const logoutSection = screen.getByText(/Welcome test@test.com/i);
         expect(logoutSection).toBeInTheDocument();
 
-        const logoutLink = screen.getByText(/logout/i);
+        const logoutLink = screen.getByRole("link", { name: /logout/i });
         expect(logoutLink).toBeInTheDocument();
     });
 
@@ -64,7 +64,7 @@ describe("Header Component", () => {
         const user = {
             email: "test@test.com",
             password: "password123",
-            isLoggedIn: true
+            isLoggedIn: true,
         };
         const mockLogOut = jest.fn();
 
@@ -74,9 +74,9 @@ describe("Header Component", () => {
             </AppContext.Provider>
         );
 
-        const logoutLink = screen.getByText(/logout/i);
+        const logoutLink = screen.getByRole("link", { name: /logout/i });
         await userEvent.click(logoutLink);
 
-        expect(mockLogOut).toHaveBeenCalled();
+        expect(mockLogOut).toHaveBeenCalledTimes(1);
     });
 });

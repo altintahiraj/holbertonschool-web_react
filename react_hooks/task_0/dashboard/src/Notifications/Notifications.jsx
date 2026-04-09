@@ -1,10 +1,9 @@
-/* eslint-disable */
-import React from "react";
+import React, { PureComponent } from "react";
 import closeIcon from "../assets/close-button.png";
 import NotificationItem from "./NotificationItem";
 import "./Notifications.css";
 
-class Notifications extends React.PureComponent {
+class Notifications extends PureComponent {
     render() {
         const {
             notifications = [],
@@ -31,8 +30,8 @@ class Notifications extends React.PureComponent {
                                             key={notification.id}
                                             id={notification.id}
                                             type={notification.type}
-                                            value={notification.value}
                                             html={notification.html}
+                                            value={notification.value}
                                             markAsRead={markNotificationAsRead}
                                         />
                                     ))}

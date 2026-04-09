@@ -6,20 +6,14 @@ import { getCurrentYear } from "../utils/utils";
 describe("Footer Component", () => {
     it("renders copyright", () => {
         const year = getCurrentYear();
-        const contextValue = { user: { isLoggedIn: false } };
-
-        render(
-            <AppContext.Provider value={contextValue}>
-                <Footer />
-            </AppContext.Provider>
-        );
-
+        render(<Footer />);
         expect(
             screen.getByText(`Copyright ${year} - Holberton School`, {
                 exact: false,
             })
         ).toBeInTheDocument();
     });
+
     it("does NOT display contact link when logged out", () => {
         const contextValue = {
             user: { isLoggedIn: false },
@@ -29,7 +23,9 @@ describe("Footer Component", () => {
                 <Footer />
             </AppContext.Provider>
         );
-        expect(screen.queryByText(/Contact us/i)).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole("link", { name: /contact us/i })
+        ).not.toBeInTheDocument();
     });
 
     it("displays contact link when logged in", () => {
@@ -45,6 +41,8 @@ describe("Footer Component", () => {
                 <Footer />
             </AppContext.Provider>
         );
-        expect(screen.getByText(/Contact us/i)).toBeInTheDocument();
+        expect(
+            screen.getByRole("link", { name: /contact us/i })
+        ).toBeInTheDocument();
     });
 });

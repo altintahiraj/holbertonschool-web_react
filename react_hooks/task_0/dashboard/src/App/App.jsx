@@ -16,9 +16,7 @@ const notificationsList = [
   {
     id: 3,
     type: "urgent",
-    html: {
-      __html: "<strong>Urgent requirement</strong> - complete by EOD",
-    },
+    html: { __html: "<strong>Urgent requirement</strong> - complete by EOD" },
   },
 ];
 
@@ -33,7 +31,7 @@ class App extends Component {
     super(props);
 
     this.state = {
-      displayDrawer: true,
+      displayDrawer: false,
       user: { email: "", password: "", isLoggedIn: false },
       notifications: notificationsList,
       courses: coursesList,
@@ -43,8 +41,7 @@ class App extends Component {
     this.handleHideDrawer = this.handleHideDrawer.bind(this);
     this.logIn = this.logIn.bind(this);
     this.logOut = this.logOut.bind(this);
-    this.markNotificationAsRead =
-      this.markNotificationAsRead.bind(this);
+    this.markNotificationAsRead = this.markNotificationAsRead.bind(this);
   }
 
   handleDisplayDrawer() {
@@ -62,32 +59,27 @@ class App extends Component {
   }
 
   logOut() {
-    this.setState({
-      user: { email: "", password: "", isLoggedIn: false },
-    });
+    this.setState({ user: { email: "", password: "", isLoggedIn: false } });
   }
 
   markNotificationAsRead(id) {
     console.log(`Notification ${id} has been marked as read`);
-
     this.setState((prevState) => ({
-      notifications: prevState.notifications.filter((n) => n.id !== id),
+      notifications: prevState.notifications.filter(
+        (notification) => notification.id !== id
+      ),
     }));
   }
 
   render() {
     const { user, displayDrawer, notifications, courses } = this.state;
 
-    const contextValue = {
-      user,
-      logOut: this.logOut,
-    };
+    const contextValue = { user, logOut: this.logOut };
 
     return (
       <AppContext.Provider value={contextValue}>
         <div className="notifications-header">
           <Header />
-
           <div className="root-notifications">
             <Notifications
               notifications={notifications}
