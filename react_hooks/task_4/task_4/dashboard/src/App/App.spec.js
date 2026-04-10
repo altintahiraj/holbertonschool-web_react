@@ -141,8 +141,17 @@ jest.mock("../Notifications/Notifications", () => {
 });
 
 jest.mock("../CourseList/CourseList", () => {
-    function MockCourseList() {
-        return <div>CourseList</div>;
+    function MockCourseList({ courses }) {
+        return (
+            <div>
+                CourseList
+                <ul data-testid="courses-list">
+                    {(courses || []).map((course) => (
+                        <li key={course.id}>{course.name}</li>
+                    ))}
+                </ul>
+            </div>
+        );
     }
 
     return MockCourseList;
@@ -190,8 +199,26 @@ describe("App Component", () => {
         },
     ];
 
+    const coursesData = [
+        { id: 1, name: "ES6", credit: "60" },
+        { id: 2, name: "Webpack", credit: "20" },
+        { id: 3, name: "React", credit: "40" },
+    ];
+
     beforeEach(() => {
-        axios.get.mockResolvedValue({ data: notificationsData });
+        axios.get.mockImplementation((url) => {
+            if (url === "/notifications.json") {
+                return Promise.resolve({ data: notificationsData });
+            }
+            if (url === "/courses.json") {
+                return Promise.resolve({ data: coursesData });
+            }
+            return Promise.resolve({ data: [] });
+        });
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     function ContextProbe() {
@@ -220,6 +247,30 @@ describe("App Component", () => {
         renderApp();
 
         expect(axios.get).toHaveBeenCalledWith("/notifications.json");
+    });
+
+    it("fetches courses from /courses.json on mount", () => {
+        renderApp();
+
+        expect(axios.get).toHaveBeenCalledWith("/courses.json");
+    });
+
+    it("fetches courses again when user state changes", async () => {
+        const user = userEvent.setup();
+        renderApp();
+
+        const initialCallCount = axios.get.mock.calls.filter(
+            (call) => call[0] === "/courses.json"
+        ).length;
+
+        await user.click(screen.getByRole("button", { name: /trigger login/i }));
+
+        await waitFor(() => {
+            const newCallCount = axios.get.mock.calls.filter(
+                (call) => call[0] === "/courses.json"
+            ).length;
+            expect(newCallCount).toBeGreaterThan(initialCallCount);
+        });
     });
 
     it("initializes the app with the context user object", () => {
@@ -312,7 +363,9 @@ describe("App Component", () => {
         const user = userEvent.setup();
         renderApp();
 
-        expect(screen.getByText("New course available")).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText("New course available")).toBeInTheDocument();
+        });
 
         await user.click(
             screen.getByRole("button", { name: /mark notification 1/i })
@@ -328,7 +381,12 @@ describe("App Component", () => {
             resolveNotifications = resolve;
         });
 
-        axios.get.mockReturnValueOnce(delayedNotifications);
+        axios.get.mockImplementation((url) => {
+            if (url === "/notifications.json") return delayedNotifications;
+            if (url === "/courses.json") return Promise.resolve({ data: coursesData });
+            return Promise.resolve({ data: [] });
+        });
+
         renderApp();
 
         await user.click(

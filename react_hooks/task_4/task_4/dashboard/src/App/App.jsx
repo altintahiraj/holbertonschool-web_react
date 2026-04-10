@@ -11,35 +11,21 @@ import BodySectionWithMarginBottom from "../BodySection/BodySectionWithMarginBot
 import AppContext from "../Context/context";
 import "./App.css";
 
-const notificationsList = [
-  { id: 1, type: "default", value: "New course available" },
-  { id: 2, type: "urgent", value: "New resume available" },
-  {
-    id: 3,
-    type: "urgent",
-    html: { __html: "<strong>Urgent requirement</strong> - complete by EOD" },
-  },
-];
-
-const coursesList = [
-  { id: 1, name: "ES6", credit: "60" },
-  { id: 2, name: "Webpack", credit: "20" },
-  { id: 3, name: "React", credit: "40" },
-];
-
 const App = () => {
   const { user: contextUser } = useContext(AppContext);
   const removedNotificationIdsRef = useRef(new Set());
   const [displayDrawer, setDisplayDrawer] = useState(true);
   const [user, setUser] = useState(contextUser);
-  const [notifications, setNotifications] = useState(notificationsList);
+  const [notifications, setNotifications] = useState([]);
+  const [courses, setCourses] = useState([]);
 
+  // Fetch notifications on initial mount
   useEffect(() => {
     let isMounted = true;
 
-    axios
-      .get("/notifications.json")
-      .then(({ data }) => {
+    const fetchNotifications = async () => {
+      try {
+        const { data } = await axios.get("/notifications.json");
         if (isMounted) {
           const nextNotifications = Array.isArray(data)
             ? data
@@ -54,13 +40,48 @@ const App = () => {
             )
           );
         }
-      })
-      .catch(() => {});
+      } catch (err) {
+        if (process.env.NODE_ENV === "development") {
+          console.error(err);
+        }
+      }
+    };
+
+    fetchNotifications();
 
     return () => {
       isMounted = false;
     };
   }, []);
+
+  // Fetch courses whenever user state changes
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchCourses = async () => {
+      try {
+        const { data } = await axios.get("/courses.json");
+        if (isMounted) {
+          const nextCourses = Array.isArray(data)
+            ? data
+            : Array.isArray(data?.courses)
+              ? data.courses
+              : [];
+          setCourses(nextCourses);
+        }
+      } catch (err) {
+        if (process.env.NODE_ENV === "development") {
+          console.error(err);
+        }
+      }
+    };
+
+    fetchCourses();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
 
   const handleDisplayDrawer = useCallback(() => {
     setDisplayDrawer(true);
@@ -107,7 +128,7 @@ const App = () => {
 
       {user.isLoggedIn ? (
         <BodySectionWithMarginBottom title="Course list">
-          <CourseList courses={coursesList} />
+          <CourseList courses={courses} />
         </BodySectionWithMarginBottom>
       ) : (
         <BodySectionWithMarginBottom title="Log in to continue">
