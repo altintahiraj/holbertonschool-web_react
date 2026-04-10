@@ -11,7 +11,7 @@ import BodySectionWithMarginBottom from "../BodySection/BodySectionWithMarginBot
 import AppContext from "../Context/context";
 import "./App.css";
 
-const App = () => {
+function App() {
   const { user: contextUser } = useContext(AppContext);
   const removedNotificationIdsRef = useRef(new Set());
   const [displayDrawer, setDisplayDrawer] = useState(true);
@@ -40,10 +40,8 @@ const App = () => {
             )
           );
         }
-      } catch (err) {
-        if (process.env.NODE_ENV === "development") {
-          console.error(err);
-        }
+      } catch (_err) {
+        // silently handle fetch errors
       }
     };
 
@@ -69,10 +67,8 @@ const App = () => {
               : [];
           setCourses(nextCourses);
         }
-      } catch (err) {
-        if (process.env.NODE_ENV === "development") {
-          console.error(err);
-        }
+      } catch (_err) {
+        // silently handle fetch errors
       }
     };
 
@@ -143,6 +139,6 @@ const App = () => {
       <Footer />
     </AppContext.Provider>
   );
-};
+}
 
 export default App;
