@@ -1,10 +1,8 @@
 import { useContext } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
+import mockAxios from "axios";
 import AppContext from "../Context/context";
-
-jest.mock("axios");
 
 jest.mock("../Header/Header", () => {
     const React = jest.requireActual("react");
@@ -127,11 +125,16 @@ jest.mock("../Notifications/Notifications", () => {
                     mark notification 1
                 </button>
                 <ul>
-                    {notifications.map((notification) => (
-                        <li key={notification.id}>
-                            {notification.value || notification.html.__html}
-                        </li>
-                    ))}
+                    {notifications.map((notification) =>
+                        notification.html ? (
+                            <li
+                                key={notification.id}
+                                dangerouslySetInnerHTML={notification.html}
+                            />
+                        ) : (
+                            <li key={notification.id}>{notification.value}</li>
+                        )
+                    )}
                 </ul>
             </section>
         );
@@ -143,14 +146,16 @@ jest.mock("../Notifications/Notifications", () => {
 jest.mock("../CourseList/CourseList", () => {
     function MockCourseList({ courses }) {
         return (
-            <div>
-                CourseList
-                <ul data-testid="courses-list">
-                    {(courses || []).map((course) => (
-                        <li key={course.id}>{course.name}</li>
+            <section>
+                <p>CourseList</p>
+                <ul>
+                    {courses.map((course) => (
+                        <li key={course.id}>
+                            {course.name} - {course.credit}
+                        </li>
                     ))}
                 </ul>
-            </div>
+            </section>
         );
     }
 
@@ -186,7 +191,6 @@ jest.mock("../BodySection/BodySectionWithMarginBottom", () => {
 import App from "./App";
 
 describe("App Component", () => {
-    const renderApp = () => render(<App />);
     const notificationsData = [
         { id: 1, type: "default", value: "New course available" },
         { id: 2, type: "urgent", value: "New resume available" },
@@ -194,31 +198,47 @@ describe("App Component", () => {
             id: 3,
             type: "urgent",
             html: {
-                __html: "<strong>Urgent requirement</strong> - complete by EOD",
+                __html: "<strong>This should be replaced</strong>",
             },
         },
     ];
-
     const coursesData = [
         { id: 1, name: "ES6", credit: "60" },
         { id: 2, name: "Webpack", credit: "20" },
         { id: 3, name: "React", credit: "40" },
     ];
 
+    const getCoursesFetchCount = () =>
+        mockAxios.get.mock.calls.filter(([url]) => url === "/courses.json").length;
+
+    const renderApp = async () => {
+        const rendered = render(<App />);
+
+        await waitFor(() => {
+            expect(mockAxios.get).toHaveBeenCalledWith("/notifications.json");
+            expect(mockAxios.get).toHaveBeenCalledWith("/courses.json");
+        });
+
+        return rendered;
+    };
+
     beforeEach(() => {
-        axios.get.mockImplementation((url) => {
+        mockAxios.reset();
+        mockAxios.get.mockImplementation((url) => {
             if (url === "/notifications.json") {
                 return Promise.resolve({ data: notificationsData });
             }
+
             if (url === "/courses.json") {
                 return Promise.resolve({ data: coursesData });
             }
-            return Promise.resolve({ data: [] });
+
+            return Promise.reject(new Error(`Unexpected URL: ${url}`));
         });
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        mockAxios.reset();
     });
 
     function ContextProbe() {
@@ -233,8 +253,8 @@ describe("App Component", () => {
         );
     }
 
-    it("renders the main sections", () => {
-        renderApp();
+    it("renders the main sections", async () => {
+        await renderApp();
 
         expect(
             screen.getByRole("heading", { name: /school dashboard/i })
@@ -243,43 +263,48 @@ describe("App Component", () => {
         expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
     });
 
-    it("fetches notifications from /notifications.json on mount", () => {
-        renderApp();
+    it("retrieves notifications data when the app loads", async () => {
+        await renderApp();
 
-        expect(axios.get).toHaveBeenCalledWith("/notifications.json");
+        await waitFor(() => {
+            expect(screen.getByText("New course available")).toBeInTheDocument();
+            expect(screen.getByText(/Urgent requirement/i)).toBeInTheDocument();
+        });
     });
 
-    it("fetches courses from /courses.json on mount", () => {
-        renderApp();
-
-        expect(axios.get).toHaveBeenCalledWith("/courses.json");
-    });
-
-    it("fetches courses again when user state changes", async () => {
+    it("retrieves courses data whenever the user state changes", async () => {
         const user = userEvent.setup();
-        renderApp();
+        await renderApp();
 
-        const initialCallCount = axios.get.mock.calls.filter(
-            (call) => call[0] === "/courses.json"
-        ).length;
+        expect(getCoursesFetchCount()).toBe(1);
 
         await user.click(screen.getByRole("button", { name: /trigger login/i }));
 
         await waitFor(() => {
-            const newCallCount = axios.get.mock.calls.filter(
-                (call) => call[0] === "/courses.json"
-            ).length;
-            expect(newCallCount).toBeGreaterThan(initialCallCount);
+            expect(getCoursesFetchCount()).toBe(2);
+        });
+
+        expect(screen.getByText("ES6 - 60")).toBeInTheDocument();
+        expect(screen.getByText("Webpack - 20")).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: /^logout$/i }));
+
+        await waitFor(() => {
+            expect(getCoursesFetchCount()).toBe(3);
         });
     });
 
-    it("initializes the app with the context user object", () => {
+    it("initializes the app with the context user object", async () => {
         render(
             <>
                 <App />
                 <ContextProbe />
             </>
         );
+
+        await waitFor(() => {
+            expect(mockAxios.get).toHaveBeenCalled();
+        });
 
         expect(screen.getByTestId("header-email")).toHaveTextContent("");
         expect(screen.getByTestId("header-password")).toHaveTextContent("");
@@ -292,7 +317,7 @@ describe("App Component", () => {
 
     it("handles display drawer show and hide actions", async () => {
         const user = userEvent.setup();
-        renderApp();
+        await renderApp();
 
         expect(screen.getByTestId("display-drawer")).toHaveTextContent("true");
 
@@ -309,34 +334,43 @@ describe("App Component", () => {
 
     it("keeps notification handlers stable across re-renders", async () => {
         const user = userEvent.setup();
-        renderApp();
+        await renderApp();
 
         expect(screen.getByTestId("same-handle-display-drawer")).toHaveTextContent("true");
         expect(screen.getByTestId("same-handle-hide-drawer")).toHaveTextContent("true");
         expect(screen.getByTestId("same-mark-notification-as-read")).toHaveTextContent("true");
 
         await user.click(screen.getByRole("button", { name: /trigger login/i }));
-        expect(screen.getByTestId("same-handle-display-drawer")).toHaveTextContent("true");
-        expect(screen.getByTestId("same-handle-hide-drawer")).toHaveTextContent("true");
-        expect(screen.getByTestId("same-mark-notification-as-read")).toHaveTextContent("true");
+
+        await waitFor(() => {
+            expect(screen.getByTestId("same-handle-display-drawer")).toHaveTextContent("true");
+            expect(screen.getByTestId("same-handle-hide-drawer")).toHaveTextContent("true");
+            expect(screen.getByTestId("same-mark-notification-as-read")).toHaveTextContent("true");
+        });
 
         await user.click(
             screen.getByRole("button", { name: /mark notification 1/i })
         );
-        expect(screen.getByTestId("same-handle-display-drawer")).toHaveTextContent("true");
-        expect(screen.getByTestId("same-handle-hide-drawer")).toHaveTextContent("true");
-        expect(screen.getByTestId("same-mark-notification-as-read")).toHaveTextContent("true");
+
+        await waitFor(() => {
+            expect(screen.getByTestId("same-handle-display-drawer")).toHaveTextContent("true");
+            expect(screen.getByTestId("same-handle-hide-drawer")).toHaveTextContent("true");
+            expect(screen.getByTestId("same-mark-notification-as-read")).toHaveTextContent("true");
+        });
     });
 
     it("updates user state on logIn", async () => {
         const user = userEvent.setup();
-        renderApp();
+        await renderApp();
 
         await user.click(screen.getByRole("button", { name: /trigger login/i }));
 
-        expect(screen.getByTestId("header-email")).toHaveTextContent("test@test.com");
-        expect(screen.getByTestId("header-password")).toHaveTextContent("password123");
-        expect(screen.getByTestId("header-logged-in")).toHaveTextContent("true");
+        await waitFor(() => {
+            expect(screen.getByTestId("header-email")).toHaveTextContent("test@test.com");
+            expect(screen.getByTestId("header-password")).toHaveTextContent("password123");
+            expect(screen.getByTestId("header-logged-in")).toHaveTextContent("true");
+        });
+
         expect(screen.getByText("CourseList")).toBeInTheDocument();
         expect(
             screen.getByRole("link", { name: /contact us/i })
@@ -345,14 +379,17 @@ describe("App Component", () => {
 
     it("resets user state on logOut", async () => {
         const user = userEvent.setup();
-        renderApp();
+        await renderApp();
 
         await user.click(screen.getByRole("button", { name: /trigger login/i }));
         await user.click(screen.getByRole("button", { name: /^logout$/i }));
 
-        expect(screen.getByTestId("header-email")).toHaveTextContent("");
-        expect(screen.getByTestId("header-password")).toHaveTextContent("");
-        expect(screen.getByTestId("header-logged-in")).toHaveTextContent("false");
+        await waitFor(() => {
+            expect(screen.getByTestId("header-email")).toHaveTextContent("");
+            expect(screen.getByTestId("header-password")).toHaveTextContent("");
+            expect(screen.getByTestId("header-logged-in")).toHaveTextContent("false");
+        });
+
         expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
         expect(
             screen.queryByRole("link", { name: /contact us/i })
@@ -361,7 +398,7 @@ describe("App Component", () => {
 
     it("removes notification when marked as read", async () => {
         const user = userEvent.setup();
-        renderApp();
+        await renderApp();
 
         await waitFor(() => {
             expect(screen.getByText("New course available")).toBeInTheDocument();
@@ -381,18 +418,23 @@ describe("App Component", () => {
             resolveNotifications = resolve;
         });
 
-        axios.get.mockImplementation((url) => {
-            if (url === "/notifications.json") return delayedNotifications;
-            if (url === "/courses.json") return Promise.resolve({ data: coursesData });
-            return Promise.resolve({ data: [] });
+        mockAxios.get.mockImplementation((url) => {
+            if (url === "/notifications.json") {
+                return delayedNotifications;
+            }
+
+            if (url === "/courses.json") {
+                return Promise.resolve({ data: coursesData });
+            }
+
+            return Promise.reject(new Error(`Unexpected URL: ${url}`));
         });
 
-        renderApp();
+        await renderApp();
 
         await user.click(
             screen.getByRole("button", { name: /mark notification 1/i })
         );
-        expect(screen.queryByText("New course available")).not.toBeInTheDocument();
 
         resolveNotifications({ data: notificationsData });
 
