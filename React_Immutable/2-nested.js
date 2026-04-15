@@ -1,6 +1,5 @@
-/*eslint-disable*/
-import { fromJS } from "immutable";
+import { fromJS } from 'immutable';
 
-export default function getImmutableObject(object, array) {
-    return fromJS(object).getIn(array);
+export default function accessImmutableObject(object, array) {
+  return fromJS(object).getIn(array);
 }

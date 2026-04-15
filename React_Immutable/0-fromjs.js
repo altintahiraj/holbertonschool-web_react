@@ -1,4 +1,3 @@
-/*eslint-disable */
 import { fromJS } from 'immutable';
 
 function getImmutableObject(object) {
