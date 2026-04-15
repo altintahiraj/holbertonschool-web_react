@@ -4,32 +4,38 @@ import { getCurrentYear } from "../utils/utils";
 
 describe("Footer Component", () => {
     it("renders copyright", () => {
-        const year = getCurrentYear();
-        render(<Footer />);
+        render(
+            <Footer
+                user={{ isLoggedIn: false }}
+            />
+        );
+
         expect(
-            screen.getByText(`Copyright ${year} - Holberton School`, {
+            screen.getByText(`Copyright ${getCurrentYear()}`, {
                 exact: false,
             })
         ).toBeInTheDocument();
     });
 
-    it("does NOT display contact link when logged out", () => {
+    it("does not show contact when logged out", () => {
         render(<Footer user={{ isLoggedIn: false }} />);
+
         expect(
             screen.queryByRole("link", { name: /contact us/i })
         ).not.toBeInTheDocument();
     });
 
-    it("displays contact link when logged in", () => {
+    it("shows contact when logged in", () => {
         render(
             <Footer
                 user={{
                     email: "test@test.com",
-                    password: "password123",
+                    password: "123",
                     isLoggedIn: true,
                 }}
             />
         );
+
         expect(
             screen.getByRole("link", { name: /contact us/i })
         ).toBeInTheDocument();

@@ -1,4 +1,5 @@
 import { memo } from "react";
+import PropTypes from "prop-types";
 
 const NotificationItem = memo(function NotificationItem({
   id = 0,
@@ -36,5 +37,15 @@ const NotificationItem = memo(function NotificationItem({
     </li>
   );
 });
+
+NotificationItem.propTypes = {
+  id: PropTypes.number,
+  type: PropTypes.oneOf(["default", "urgent"]),
+  value: PropTypes.string,
+  html: PropTypes.shape({
+    __html: PropTypes.string,
+  }),
+  markAsRead: PropTypes.func,
+};
 
 export default NotificationItem;

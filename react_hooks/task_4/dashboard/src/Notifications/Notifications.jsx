@@ -1,4 +1,5 @@
 import { memo } from "react";
+import PropTypes from "prop-types";
 import closeIcon from "../assets/close-button.png";
 import NotificationItem from "./NotificationItem";
 import "./Notifications.css";
@@ -60,5 +61,22 @@ function arePropsEqual(prevProps, nextProps) {
         prevProps.markNotificationAsRead === nextProps.markNotificationAsRead
     );
 }
+
+Notifications.propTypes = {
+    notifications: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            type: PropTypes.oneOf(["default", "urgent"]).isRequired,
+            value: PropTypes.string,
+            html: PropTypes.shape({
+                __html: PropTypes.string,
+            }),
+        })
+    ),
+    displayDrawer: PropTypes.bool,
+    handleDisplayDrawer: PropTypes.func,
+    handleHideDrawer: PropTypes.func,
+    markNotificationAsRead: PropTypes.func,
+};
 
 export default memo(Notifications, arePropsEqual);

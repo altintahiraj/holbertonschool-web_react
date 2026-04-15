@@ -36,6 +36,9 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
+    "roots": [
+      "<rootDir>"
+    ],
     "moduleNameMapper": {
       "^axios$": "jest-mock-axios",
       "\\.(css|less)$": "identity-obj-proxy",

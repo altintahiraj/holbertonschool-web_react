@@ -9,7 +9,7 @@ import Notifications from "../Notifications/Notifications";
 import BodySection from "../BodySection/BodySection";
 import BodySectionWithMarginBottom from "../BodySection/BodySectionWithMarginBottom";
 import { getLatestNotification } from "../utils/utils";
-import { appReducer, APP_ACTIONS, initialState } from "./appReducer";
+import { appReducer, initialState, APP_ACTIONS } from "./appReducer";
 import "./App.css";
 
 function normalizeNotifications(data) {
@@ -22,9 +22,9 @@ function normalizeNotifications(data) {
   return nextNotifications.map((notification) =>
     notification.html
       ? {
-          ...notification,
-          html: { __html: getLatestNotification() },
-        }
+        ...notification,
+        html: { __html: getLatestNotification() },
+      }
       : notification
   );
 }
@@ -37,15 +37,9 @@ function normalizeCourses(data) {
       : [];
 }
 
-function logDevelopmentError(error) {
-  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-    console.error(error);
-  }
-}
-
-const App = () => {
-  const removedNotificationIdsRef = useRef(new Set());
+function App() {
   const [state, dispatch] = useReducer(appReducer, initialState);
+  const removedNotificationIdsRef = useRef(new Set());
 
   useEffect(() => {
     let isMounted = true;
@@ -64,7 +58,7 @@ const App = () => {
           });
         }
       } catch (error) {
-        logDevelopmentError(error);
+        console.error(error);
       }
     };
 
@@ -76,10 +70,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (!state.user.isLoggedIn) {
-      return undefined;
-    }
-
+    if (!state.user.isLoggedIn) return;
     let isMounted = true;
 
     const fetchCourses = async () => {
@@ -93,7 +84,7 @@ const App = () => {
           });
         }
       } catch (error) {
-        logDevelopmentError(error);
+        console.error(error);
       }
     };
 
@@ -102,14 +93,20 @@ const App = () => {
     return () => {
       isMounted = false;
     };
-  }, [state.user.isLoggedIn]);
+  }, [state.user]);
 
   const handleDisplayDrawer = useCallback(() => {
-    dispatch({ type: APP_ACTIONS.TOGGLE_DRAWER, payload: true });
+    dispatch({
+      type: APP_ACTIONS.TOGGLE_DRAWER,
+      payload: true,
+    });
   }, []);
 
   const handleHideDrawer = useCallback(() => {
-    dispatch({ type: APP_ACTIONS.TOGGLE_DRAWER, payload: false });
+    dispatch({
+      type: APP_ACTIONS.TOGGLE_DRAWER,
+      payload: false,
+    });
   }, []);
 
   const logIn = useCallback((email, password) => {
@@ -120,11 +117,14 @@ const App = () => {
   }, []);
 
   const logOut = useCallback(() => {
-    dispatch({ type: APP_ACTIONS.LOGOUT });
+    dispatch({
+      type: APP_ACTIONS.LOGOUT,
+    });
   }, []);
 
   const markNotificationAsRead = useCallback((id) => {
     removedNotificationIdsRef.current.add(id);
+
     dispatch({
       type: APP_ACTIONS.MARK_NOTIFICATION_READ,
       payload: id,
@@ -135,6 +135,7 @@ const App = () => {
     <>
       <div className="notifications-header">
         <Header user={state.user} logOut={logOut} />
+
         <div className="root-notifications">
           <Notifications
             notifications={state.notifications}
@@ -163,6 +164,6 @@ const App = () => {
       <Footer user={state.user} />
     </>
   );
-};
+}
 
 export default App;

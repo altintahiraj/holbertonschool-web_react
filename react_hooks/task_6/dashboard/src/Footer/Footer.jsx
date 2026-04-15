@@ -1,7 +1,8 @@
 import { getCurrentYear, getFooterCopy } from "../utils/utils";
 import "./Footer.css";
 
-const Footer = ({ user = {} }) => {
+const Footer = ({ user }) => {
+
     return (
         <div className="App-footer">
             <p>

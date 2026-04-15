@@ -22,9 +22,9 @@ function normalizeNotifications(data) {
   return nextNotifications.map((notification) =>
     notification.html
       ? {
-          ...notification,
-          html: { __html: getLatestNotification() },
-        }
+        ...notification,
+        html: { __html: getLatestNotification() },
+      }
       : notification
   );
 }
@@ -47,7 +47,7 @@ const App = () => {
   const { user: contextUser } = useContext(AppContext);
   const removedNotificationIdsRef = useRef(new Set());
   const [displayDrawer, setDisplayDrawer] = useState(true);
-  const [user, setUser] = useState(contextUser);
+  const [user, setUser] = useState({ ...contextUser });
   const [notifications, setNotifications] = useState([]);
   const [courses, setCourses] = useState([]);
 
@@ -79,6 +79,10 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    if (!user.isLoggedIn) {
+      return;
+    }
+
     let isMounted = true;
 
     const fetchCourses = async () => {
@@ -113,7 +117,11 @@ const App = () => {
   }, []);
 
   const logOut = useCallback(() => {
-    setUser(contextUser);
+    setUser({
+      email: contextUser.email ?? "",
+      password: contextUser.password ?? "",
+      isLoggedIn: false,
+    });
   }, [contextUser]);
 
   const markNotificationAsRead = useCallback((id) => {

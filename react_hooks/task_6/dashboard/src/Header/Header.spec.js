@@ -3,59 +3,54 @@ import userEvent from "@testing-library/user-event";
 import Header from "./Header";
 
 describe("Header Component", () => {
-    it("Renders correct text", () => {
-        render(<Header user={{ isLoggedIn: false }} />);
+    const loggedOutUser = {
+        email: "",
+        password: "",
+        isLoggedIn: false,
+    };
 
-        const heading = screen.getByRole("heading", {
-            level: 1,
-            name: /School Dashboard/i,
-        });
-        expect(heading).toBeInTheDocument();
+    const loggedInUser = {
+        email: "test@test.com",
+        password: "password123",
+        isLoggedIn: true,
+    };
+
+    it("renders heading", () => {
+        render(<Header user={loggedOutUser} logOut={jest.fn()} />);
+
+        expect(
+            screen.getByRole("heading", { name: /school dashboard/i })
+        ).toBeInTheDocument();
     });
 
-    it("Renders an image", () => {
-        render(<Header user={{ isLoggedIn: false }} />);
+    it("renders image", () => {
+        render(<Header user={loggedOutUser} logOut={jest.fn()} />);
 
-        const image = screen.getByAltText(/holberton logo/i);
-        expect(image).toBeInTheDocument();
+        expect(screen.getByAltText(/holberton logo/i)).toBeInTheDocument();
     });
 
-    it("does not render logoutSection when user is not logged in", () => {
-        render(<Header user={{ isLoggedIn: false }} />);
+    it("does not show logout when logged out", () => {
+        render(<Header user={loggedOutUser} logOut={jest.fn()} />);
 
-        const logoutSection = screen.queryByText(/Welcome/i);
-        expect(logoutSection).not.toBeInTheDocument();
+        expect(screen.queryByText(/welcome/i)).not.toBeInTheDocument();
     });
 
-    it("renders logoutSection when user is logged in", () => {
-        const user = {
-            email: "test@test.com",
-            password: "password123",
-            isLoggedIn: true,
-        };
+    it("shows logout when logged in", () => {
+        render(<Header user={loggedInUser} logOut={jest.fn()} />);
 
-        render(<Header user={user} logOut={jest.fn()} />);
-
-        const logoutSection = screen.getByText(/Welcome test@test.com/i);
-        expect(logoutSection).toBeInTheDocument();
-
-        const logoutLink = screen.getByRole("link", { name: /logout/i });
-        expect(logoutLink).toBeInTheDocument();
+        expect(screen.getByText(/welcome test@test.com/i)).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /logout/i })).toBeInTheDocument();
     });
 
-    it("calls logOut function when logout link is clicked", async () => {
-        const user = {
-            email: "test@test.com",
-            password: "password123",
-            isLoggedIn: true,
-        };
-        const mockLogOut = jest.fn();
+    it("calls logout when clicked", async () => {
+        const mockLogout = jest.fn();
 
-        render(<Header user={user} logOut={mockLogOut} />);
+        render(<Header user={loggedInUser} logOut={mockLogout} />);
 
-        const logoutLink = screen.getByRole("link", { name: /logout/i });
-        await userEvent.click(logoutLink);
+        await userEvent.click(
+            screen.getByRole("link", { name: /logout/i })
+        );
 
-        expect(mockLogOut).toHaveBeenCalledTimes(1);
+        expect(mockLogout).toHaveBeenCalledTimes(1);
     });
 });

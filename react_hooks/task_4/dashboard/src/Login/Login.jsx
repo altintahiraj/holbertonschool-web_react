@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import "./Login.css";
 
 function Login(props) {
@@ -75,3 +76,7 @@ function Login(props) {
 }
 
 export default Login;
+
+Login.propTypes = {
+    logIn: PropTypes.func,
+};

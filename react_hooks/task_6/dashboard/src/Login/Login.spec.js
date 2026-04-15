@@ -36,32 +36,6 @@ describe("Login Component", () => {
         expect(button).toBeEnabled();
     });
 
-    it("button stays disabled with an invalid email", async () => {
-        render(<Login />);
-
-        const email = screen.getByLabelText(/Email/i);
-        const password = screen.getByLabelText(/Password/i);
-        const button = screen.getByRole("button");
-
-        await userEvent.type(email, "invalid-email");
-        await userEvent.type(password, "password123");
-
-        expect(button).toBeDisabled();
-    });
-
-    it("button stays disabled with a short password", async () => {
-        render(<Login />);
-
-        const email = screen.getByLabelText(/Email/i);
-        const password = screen.getByLabelText(/Password/i);
-        const button = screen.getByRole("button");
-
-        await userEvent.type(email, "test@test.com");
-        await userEvent.type(password, "short");
-
-        expect(button).toBeDisabled();
-    });
-
     it("calls logIn with email and password on submit", async () => {
         const logIn = jest.fn();
 

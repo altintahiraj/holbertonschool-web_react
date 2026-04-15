@@ -1,8 +1,7 @@
-/* eslint-disable */
 import React from "react";
 
 function WithLogging(WrappedComponent) {
-    const wrappedName =
+    const componentName =
         WrappedComponent.displayName ||
         WrappedComponent.name ||
         "Component";
@@ -13,7 +12,7 @@ function WithLogging(WrappedComponent) {
         }
     }
 
-    WithLoggingComponent.displayName = `WithLogging(${wrappedName})`;
+    WithLoggingComponent.displayName = `WithLogging(${componentName})`;
 
     return WithLoggingComponent;
 }

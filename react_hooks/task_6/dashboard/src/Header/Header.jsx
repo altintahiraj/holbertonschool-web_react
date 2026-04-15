@@ -1,12 +1,13 @@
+import { useContext } from "react";
 import logo from "../assets/holberton-logo.jpg";
+
 import "./Header.css";
 
-function Header({ user = {}, logOut = () => {} }) {
-    const handleLogout = (event) => {
-        event.preventDefault();
+function Header({ user, logOut }) {
+    const handleLogout = (e) => {
+        e.preventDefault();
         logOut();
     };
-
     return (
         <>
             <div className="App-header">
