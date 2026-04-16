@@ -1,8 +1,5 @@
-/*eslint-disable*/
-const { fromJS } = require('immutable');
+import { fromJS } from 'immutable';
 
-function accessImmutableObject(object, array) {
+export default function accessImmutableObject(object, array) {
   return fromJS(object).getIn(array);
 }
-
-module.exports = accessImmutableObject;

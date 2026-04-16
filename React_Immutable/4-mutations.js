@@ -1,7 +1,6 @@
-/* eslint-disable */
-const { Map } = require('immutable');
+import { Map } from 'immutable';
 
-const map = Map({
+export const map = Map({
   1: 'Liam',
   2: 'Noah',
   3: 'Elijah',
@@ -10,8 +9,6 @@ const map = Map({
   6: 'Lucas',
 });
 
-const map2 = map
-  .set(2, 'Benjamin')
-  .set(4, 'Oliver');
-
-module.exports = { map, map2 };
+export const map2 = map.withMutations((mutableMap) => {
+  mutableMap.set(2, 'Benjamin').set(4, 'Oliver');
+});

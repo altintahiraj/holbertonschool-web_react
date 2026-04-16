@@ -1,8 +1,7 @@
-/*eslint-disable */
-const { fromJS } = require('immutable');
+import { fromJS } from 'immutable';
 
 function getImmutableObject(object) {
-  return fromJS(object);
+    const map = fromJS(object);
+    return map;
 }
-
-module.exports = getImmutableObject;
+export default getImmutableObject;
