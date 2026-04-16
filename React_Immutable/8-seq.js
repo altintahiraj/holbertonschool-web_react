@@ -1,18 +1,21 @@
-import { Seq } from "immutable";
+/* eslint-disable */
+const { Seq } = require('immutable');
 
 function capitalize(word) {
-  return `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
+  return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-export default function printBestStudents(grades) {
-  const bestStudents = Seq(grades)
-    .filter((student) => student.score >= 70)
-    .map((student) => ({
-      ...student,
+function printBestStudents(grades) {
+  const result = Seq(grades)
+    .filter(student => student.score >= 70)
+    .map(student => ({
+      score: student.score,
       firstName: capitalize(student.firstName),
       lastName: capitalize(student.lastName),
     }))
-    .toObject();
+    .toJS();
 
-  return bestStudents;
+  console.log(result);
 }
+
+module.exports = printBestStudents;

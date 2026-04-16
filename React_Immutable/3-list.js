@@ -1,9 +1,16 @@
-import { List } from 'immutable';
+/*eslint-disable*/
+/* eslint-disable */
+const { List } = require('immutable');
 
-export function getListObject(array) {
+function getListObject(array) {
   return List(array);
 }
 
-export function addElementToList(list, element) {
+function addElementToList(list, element) {
   return list.push(element);
 }
+
+module.exports = {
+  getListObject,
+  addElementToList
+};
