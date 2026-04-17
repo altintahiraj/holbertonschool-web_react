@@ -1,7 +1,5 @@
 import { fromJS } from 'immutable';
 
-function getImmutableObject(object) {
-    const map = fromJS(object);
-    return map;
+export default function getImmutableObject(object) {
+  return fromJS(object);
 }
-export default getImmutableObject;

@@ -1,3 +1,6 @@
-# React Immutable
+# React_Immutable
 
-Exercises for learning Immutable.js in React projects.
+Task 0: Convert a plain object into an Immutable object using `fromJS`.
+
+## Files
+- `0-fromjs.js`: exports `getImmutableObject(object)`

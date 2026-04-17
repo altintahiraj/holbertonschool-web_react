@@ -1,18 +1,17 @@
-import { Seq } from 'immutable';
+import { Seq as seq } from 'immutable';
 
-function capitalize(word) {
-  return `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
-}
+const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 
-export default function printBestStudents(grades) {
-  const bestStudents = Seq(grades)
+export function printBestStudents(object) {
+  const bestStudents = seq(object)
     .filter((student) => student.score >= 70)
     .map((student) => ({
       ...student,
       firstName: capitalize(student.firstName),
       lastName: capitalize(student.lastName),
-    }))
-    .toObject();
+    }));
 
-  console.log(bestStudents);
+  console.log(bestStudents.toJS());
 }
+
+export default printBestStudents;
