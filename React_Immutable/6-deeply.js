@@ -1,7 +1,5 @@
-import { Map } from 'immutable';
+import { fromJS } from 'immutable';
 
-export function mergeDeeplyElements(page1, page2) {
-  return Map(page1).mergeDeep(page2);
+export default function mergeDeeplyElements(page1, page2) {
+  return fromJS(page1).mergeDeep(fromJS(page2));
 }
-
-export default mergeDeeplyElements;

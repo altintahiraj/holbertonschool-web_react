@@ -1,12 +1,23 @@
 module.exports = {
   env: {
-    es2021: true,
-    node: true,
+    browser: false,
+    es6: true,
+    jest: true,
   },
-  extends: ['airbnb-base'],
+  extends: [
+    'airbnb-base',
+    'plugin:jest/all',
+  ],
+  globals: {
+    Atomics: 'readonly',
+    SharedArrayBuffer: 'readonly',
+  },
   parserOptions: {
-    ecmaVersion: 12,
+    ecmaVersion: 2018,
     sourceType: 'module',
   },
-  rules: {},
+  plugins: ['jest'],
+  rules: {
+    'jest/prefer-expect-assertions': 'off',
+  },
 };
